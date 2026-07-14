@@ -49,10 +49,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_margin="@dimen/settings_buttons_text_size"
+            android:layout_margin="@dimen/settings_buttons_text_margin"
             android:text="@string/dark_theme"
             android:textColor="@color/text_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_buttons_text_size" />
 
         <Switch
             android:layout_width="match_parent"
@@ -75,11 +75,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_margin="@dimen/settings_buttons_text_size"
+            android:layout_margin="@dimen/settings_buttons_text_margin"
             android:layout_weight="1"
             android:text="@string/share_this_app"
             android:textColor="@color/text_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
             android:layout_width="24dp"
@@ -102,11 +102,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_margin="@dimen/settings_buttons_text_size"
+            android:layout_margin="@dimen/settings_buttons_text_margin"
             android:layout_weight="1"
             android:text="@string/support_message"
             android:textColor="@color/text_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
             android:layout_width="24dp"
@@ -129,11 +129,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_margin="@dimen/settings_buttons_text_size"
+            android:layout_margin="@dimen/settings_buttons_text_margin"
             android:layout_weight="1"
             android:text="@string/terms"
             android:textColor="@color/text_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
             android:layout_width="24dp"

@@ -2,5 +2,6 @@
 <resources>
     <dimen name="button_margin">8dp</dimen>
     <dimen name="settings_buttons_height">56dp</dimen>
-    <dimen name="settings_buttons_text_size">16dp</dimen>
+    <dimen name="settings_buttons_text_size">16sp</dimen>
+    <dimen name="settings_buttons_text_margin">16dp</dimen>
 </resources>

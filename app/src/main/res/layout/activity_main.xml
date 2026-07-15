@@ -36,7 +36,7 @@
         android:id="@+id/search_button"
         style="@style/MainActivityButton"
         android:text="@string/search"
-        app:icon = "@drawable/search_icon"
+        app:icon = "@drawable/ic_search_24"
         >
 
 
@@ -45,7 +45,8 @@
         android:id="@+id/media_button"
         style="@style/MainActivityButton"
         android:text="@string/media_library"
-        app:icon = "@drawable/media_icon"
+        app:icon = "@drawable/ic_media_24"
+
         >
 
     </Button>
@@ -53,7 +54,7 @@
         android:id="@+id/set_button"
         style="@style/MainActivityButton"
         android:text="@string/settings"
-        app:icon = "@drawable/settings_icon">
+        app:icon = "@drawable/ic_settings_24">
 
     </Button>
 

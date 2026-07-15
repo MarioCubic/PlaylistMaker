@@ -23,7 +23,9 @@
             android:layout_height="match_parent"
             android:layout_gravity="start|center_vertical"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/back_button"
+            android:paddingStart="4dp"
+            android:paddingTop="4dp"
+            android:src="@drawable/ic_back_arrow_48"
             app:tint="@color/text_color" />
 
         <TextView
@@ -46,17 +48,18 @@
         app:layout_constraintTop_toBottomOf="@+id/header">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:layout_margin="@dimen/settings_buttons_text_margin"
+            android:layout_weight="1"
             android:text="@string/dark_theme"
             android:textColor="@color/text_color"
             android:textSize="@dimen/settings_buttons_text_size" />
 
         <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="40dp"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="6dp"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -82,11 +85,11 @@
             android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/share_icon" />
+            android:src="@drawable/ic_share_24" />
     </LinearLayout>
 
     <LinearLayout
@@ -109,11 +112,11 @@
             android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/support_icon" />
+            android:src="@drawable/ic_support_24" />
     </LinearLayout>
 
     <LinearLayout
@@ -121,7 +124,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/settings_buttons_height"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/support">
 
@@ -136,12 +139,14 @@
             android:textSize="@dimen/settings_buttons_text_size" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/terms_icon" />
+            android:src="@drawable/ic_terms_24" />
     </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

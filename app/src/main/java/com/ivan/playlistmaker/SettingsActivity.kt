@@ -34,25 +34,23 @@ class SettingsActivity : AppCompatActivity() {
         shareButton.setOnClickListener {
             val shareIntent = Intent (Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT,"https://practicum.yandex.ru/android-developer/?from=main_search_item")
+                putExtra(Intent.EXTRA_TEXT,getString(R.string.practicum_link))
             }
             startActivity(Intent.createChooser(shareIntent, "Поделиться"))
         }
         supportButton.setOnClickListener {
-            val adresses: Array <String> = arrayOf("mario.cubic@yandex.ru")
-            val themeOfMail = "Сообщение разработчикам и разработчицам приложения Playlist Maker"
-            val message = "Спасибо разработчикам и разработчицам за крутое приложение!"
             val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = "mailto:".toUri()
+                val adresses: Array <String> = arrayOf(getString(R.string.email))
                 putExtra(Intent.EXTRA_EMAIL, adresses)
-                putExtra(Intent.EXTRA_SUBJECT, themeOfMail)
-                putExtra(Intent.EXTRA_TEXT, message)
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.theme_of_mail))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
 
             }
                 startActivity(supportIntent)
             }
         termsButton.setOnClickListener {
-            val webpage: Uri = "https://yandex.ru/legal/practicum_offer/ru/".toUri()
+            val webpage: Uri = getString(R.string.terms_link).toUri()
             val termsIntent = Intent(Intent.ACTION_VIEW, webpage)
             startActivity(termsIntent)
         }

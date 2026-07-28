@@ -58,7 +58,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        searchField.setText(savedInstanceState.getString("SEARCH_TEXT"))
+        searchField.setText(savedInstanceState.getString("SEARCH_INPUT"))
     }
 
     companion object {

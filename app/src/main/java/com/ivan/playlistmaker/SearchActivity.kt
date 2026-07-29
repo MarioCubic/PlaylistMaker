@@ -3,15 +3,17 @@ package com.ivan.playlistmaker
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isVisible
 
 class SearchActivity : AppCompatActivity() {
+
     private lateinit var searchField: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,10 @@ class SearchActivity : AppCompatActivity() {
         }
         clearButton.setOnClickListener {
             searchField.setText("")
+            searchField.clearFocus()
+
+            WindowInsetsControllerCompat(window, window.decorView)
+                .hide(WindowInsetsCompat.Type.ime())
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -42,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = clearButtonVisibility(s)
+                clearButton.isVisible = !s.isNullOrEmpty()
             }
 
 
@@ -58,18 +64,11 @@ class SearchActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        searchField.setText(savedInstanceState.getString("SEARCH_INPUT"))
+        searchField.setText(savedInstanceState.getString(SEARCH_INPUT))
     }
 
     companion object {
         const val SEARCH_INPUT = "SEARCH_INPUT"
     }
 
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
 }

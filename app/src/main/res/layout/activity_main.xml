@@ -33,16 +33,21 @@
         />
     </FrameLayout>
     <Button
+        android:layout_width = "match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/search_button"
         style="@style/MainActivityButton"
         android:text="@string/search"
-        android:layout_weight="1"
         app:icon = "@drawable/ic_search_24"
         >
 
 
     </Button>
     <Button
+        android:layout_width = "match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/media_button"
         style="@style/MainActivityButton"
         android:text="@string/media_library"
@@ -52,6 +57,9 @@
 
     </Button>
     <Button
+        android:layout_width = "match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/set_button"
         style="@style/MainActivityButton"
         android:text="@string/settings"

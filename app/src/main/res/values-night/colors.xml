@@ -8,5 +8,6 @@
     <color name="main_background">#1A1B22</color>
     <color name="ic_color">#FFFFFFFF</color>
     <color name="search_field">#FFFFFFFF</color>
+    <color name="search_hint">#1A1B22</color>
     <color name="search_text">#1A1B22</color>
 </resources>

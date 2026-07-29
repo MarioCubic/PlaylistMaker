@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,9 +24,9 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
         val backButton = findViewById<ImageView>(R.id.back_button)
-        val shareButton = findViewById<LinearLayout>(R.id.share_app)
-        val supportButton = findViewById<LinearLayout>(R.id.support)
-        val termsButton = findViewById<LinearLayout>(R.id.terms)
+        val shareButton = findViewById<TextView>(R.id.share_app)
+        val supportButton = findViewById<TextView>(R.id.support)
+        val termsButton = findViewById<TextView>(R.id.terms)
 
         backButton.setOnClickListener {
             finish()

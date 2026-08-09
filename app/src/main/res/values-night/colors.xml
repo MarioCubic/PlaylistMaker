@@ -10,4 +10,7 @@
     <color name="search_field">#FFFFFFFF</color>
     <color name="search_hint">#1A1B22</color>
     <color name="search_text">#1A1B22</color>
+    <color name="placeholder_color">#AEAFB4</color>
+    <color name="track_name_color">#FFFFFF</color>
+    <color name="artist_name_color">#FFFFFF</color>
 </resources>

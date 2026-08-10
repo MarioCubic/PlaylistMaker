@@ -33,11 +33,12 @@ class TrackAdapter(val userData: List<Track>) : RecyclerView.Adapter<RecyclerVie
 
         @SuppressLint("SetTextI18n")
         fun onBind(track: Track) {
+            val radius = (2 * itemView.resources.displayMetrics.density).toInt()
             Glide.with(itemView)
                 .load(track.artworkUrl100)
                 .placeholder(R.drawable.placeholder)
                 .centerCrop()
-                .transform(RoundedCorners(2))
+                .transform(RoundedCorners(radius))
                 .into(coverView)
 
             songName.text = track.trackName

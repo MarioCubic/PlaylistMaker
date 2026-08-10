@@ -17,7 +17,7 @@ class SearchActivity : AppCompatActivity() {
 
     /*Мы же все равно удалим это когда начнем работу с сетью
     поэтому не вижу смысла выносить это в строки, верно?*/
-    val songs = listOf<Track>(
+    val tracks = listOf<Track>(
         Track(
             "Smells Like Teen Spirit",
             "Nirvana",
@@ -61,7 +61,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
-            adapter = TrackAdapter (songs)
+            adapter = TrackAdapter (tracks)
         }
         searchField = findViewById(R.id.search_input)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)

@@ -1,7 +1,6 @@
 package com.ivan.playlistmaker
 
 import android.annotation.SuppressLint
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,7 +22,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
 
@@ -58,16 +56,6 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        clearButton.setOnClickListener {
-            searchField.setText("")
-            searchField.clearFocus()
-            tracks.clear()
-            adapter.notifyDataSetChanged()
-
-
-            WindowInsetsControllerCompat(window, window.decorView)
-                .hide(WindowInsetsCompat.Type.ime())
-        }
 
         val simpleTextWatcher = object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -84,7 +72,6 @@ class SearchActivity : AppCompatActivity() {
 
 
         }
-
 
 
         val nothingFoundImg = findViewById<ImageView>(R.id.nothingFoundImg)
@@ -112,44 +99,55 @@ class SearchActivity : AppCompatActivity() {
             nothingFoundText.isVisible = true
             nothingFoundImg.isVisible = true
         }
+        clearButton.setOnClickListener {
+            searchField.setText("")
+            searchField.clearFocus()
+            allPlaceholdersDisabled()
+            tracks.clear()
+            adapter.notifyDataSetChanged()
+
+
+            WindowInsetsControllerCompat(window, window.decorView)
+                .hide(WindowInsetsCompat.Type.ime())
+        }
 
         fun searchAction() {
-            if (searchField.text.isNotEmpty()) {
-                iTunesService.search(searchField.text.toString())
-                    .enqueue(object : Callback<TrackResponse> {
-                        override fun onResponse(
-                            call: Call<TrackResponse?>,
-                            response: Response<TrackResponse?>
-                        ) {
-                            if (response.code() == 200) {
-                                tracks.clear()
+            if (searchField.text.isBlank()) return
+            iTunesService.search(searchField.text.toString())
+                .enqueue(object : Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse?>,
+                        response: Response<TrackResponse?>
+                    ) {
+                        if (response.code() == 200) {
+                            tracks.clear()
+                            allPlaceholdersDisabled()
+                            val result = response.body()?.results
+                            if (result.isNullOrEmpty()) {
                                 allPlaceholdersDisabled()
-                                if (response.body()?.results?.isNotEmpty() == true) {
-
-                                    tracks.addAll(response.body()?.results!!)
-                                    adapter.notifyDataSetChanged()
-                                }
-                                if (tracks.isEmpty()) {
-                                    allPlaceholdersDisabled()
-                                    nothingFoundPlaceholders()
-                                }
+                                nothingFoundPlaceholders()
                             } else {
-                                tracks.clear()
-                                allPlaceholdersDisabled()
-                                noInternetPlaceholders()
-                            }
-                        }
+                                tracks.addAll(result)
+                                adapter.notifyDataSetChanged()
 
-                        override fun onFailure(
-                            call: Call<TrackResponse?>,
-                            t: Throwable
-                        ) {
+                            }
+                        } else {
                             tracks.clear()
                             allPlaceholdersDisabled()
                             noInternetPlaceholders()
                         }
-                    })
-            }
+                    }
+
+                    override fun onFailure(
+                        call: Call<TrackResponse?>,
+                        t: Throwable
+                    ) {
+                        tracks.clear()
+                        allPlaceholdersDisabled()
+                        noInternetPlaceholders()
+                    }
+                })
+
         }
         searchField.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {

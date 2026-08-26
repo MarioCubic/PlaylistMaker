@@ -37,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
     private val adapter = TrackAdapter(tracks)
     private val iTunesService = retrofit.create(ItunesApi::class.java)
     private lateinit var searchField: EditText
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,76 +84,71 @@ class SearchActivity : AppCompatActivity() {
 
 
         }
-        fun convertTrackTimeToLocale(trackTimeMilis : Long): String {
-            return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMilis)
-        }
+
+
 
         val nothingFoundImg = findViewById<ImageView>(R.id.nothingFoundImg)
         val nothingFoundText = findViewById<TextView>(R.id.nothingFoundText)
         val noInternetImg = findViewById<ImageView>(R.id.noInternetImg)
         val noInternetText = findViewById<TextView>(R.id.noInternetText)
         val updateButton = findViewById<Button>(R.id.updateButton)
-        fun allPlaceholdersDisabled(){
+        fun allPlaceholdersDisabled() {
             nothingFoundText.isGone = true
             nothingFoundImg.isGone = true
             noInternetImg.isGone = true
             noInternetText.isGone = true
             updateButton.isGone = true
         }
-        fun noInternetPlaceholders(){
+
+        fun noInternetPlaceholders() {
             adapter.notifyDataSetChanged()
             noInternetImg.isVisible = true
             noInternetText.isVisible = true
             updateButton.isVisible = true
         }
-        fun nothingFoundPlaceholders(){
+
+        fun nothingFoundPlaceholders() {
             adapter.notifyDataSetChanged()
             nothingFoundText.isVisible = true
             nothingFoundImg.isVisible = true
         }
-        fun searchAction(){
-            if(searchField.text.isNotEmpty()){
-                iTunesService.search(searchField.text.toString()).enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse?>,
-                        response: Response<TrackResponse?>
-                    ) {
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            allPlaceholdersDisabled()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                val results = response.body()?.results!!.map {track ->
-                                    Track(
-                                        trackTime = convertTrackTimeToLocale(track.trackTimeMillis),
-                                        trackName = track.trackName,
-                                        artistName = track.artistName,
-                                        artworkUrl100 = track.artworkUrl100
-                                    )
-                                }
-                                tracks.addAll(results)
-                                adapter.notifyDataSetChanged()
-                            }
-                            if (tracks.isEmpty()){
+
+        fun searchAction() {
+            if (searchField.text.isNotEmpty()) {
+                iTunesService.search(searchField.text.toString())
+                    .enqueue(object : Callback<TrackResponse> {
+                        override fun onResponse(
+                            call: Call<TrackResponse?>,
+                            response: Response<TrackResponse?>
+                        ) {
+                            if (response.code() == 200) {
+                                tracks.clear()
                                 allPlaceholdersDisabled()
-                                nothingFoundPlaceholders()
+                                if (response.body()?.results?.isNotEmpty() == true) {
+
+                                    tracks.addAll(response.body()?.results!!)
+                                    adapter.notifyDataSetChanged()
+                                }
+                                if (tracks.isEmpty()) {
+                                    allPlaceholdersDisabled()
+                                    nothingFoundPlaceholders()
+                                }
+                            } else {
+                                tracks.clear()
+                                allPlaceholdersDisabled()
+                                noInternetPlaceholders()
                             }
                         }
-                        else {
+
+                        override fun onFailure(
+                            call: Call<TrackResponse?>,
+                            t: Throwable
+                        ) {
                             tracks.clear()
                             allPlaceholdersDisabled()
                             noInternetPlaceholders()
                         }
-                    }
-
-                    override fun onFailure(
-                        call: Call<TrackResponse?>,
-                        t: Throwable
-                    ) {
-                        tracks.clear()
-                        allPlaceholdersDisabled()
-                        noInternetPlaceholders()
-                    }
-                })
+                    })
             }
         }
         searchField.setOnEditorActionListener { _, actionId, _ ->
@@ -164,7 +160,6 @@ class SearchActivity : AppCompatActivity() {
         updateButton.setOnClickListener { searchAction() }
 
         searchField.addTextChangedListener(simpleTextWatcher)
-
 
 
     }
@@ -184,7 +179,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_INPUT = "SEARCH_INPUT"
     }
-
 
 
 }

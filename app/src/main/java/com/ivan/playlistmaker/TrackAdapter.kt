@@ -42,7 +42,7 @@ class TrackAdapter(val userData: List<Track>) : RecyclerView.Adapter<RecyclerVie
                 .into(coverView)
 
             songName.text = track.trackName
-            artistName.text = "${track.artistName} • ${track.trackTime}"
+            artistName.text = "${track.artistName} • ${track.convertTrackTimeToLocale(track.trackTimeMillis)}"
         }
     }
 }

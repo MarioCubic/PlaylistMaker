@@ -28,14 +28,14 @@
             app:tint="@color/text_color" />
 
         <TextView
-            android:theme="@style/TextFormat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:fontFamily="@font/ys_display_medium"
-            android:textStyle="bold"
             android:text="@string/search"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:theme="@style/TextFormat" />
     </LinearLayout>
 
     <FrameLayout
@@ -53,16 +53,19 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:inputType="text"
             android:background="@drawable/search_background"
             android:drawableStart="@drawable/ic_search_16"
             android:drawablePadding="8dp"
             android:drawableTint="@color/search_text"
             android:fontFamily="@font/ys_display_regular"
             android:hint="@string/search"
-            android:maxLength="15"
+            android:imeOptions="actionDone"
+            android:maxLength="56"
             android:maxLines="1"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
+            android:singleLine="true"
             android:textColor="@color/search_text"
             android:textColorHint="@color/search_hint"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,11 +91,80 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layout_constraintVertical_bias="0.0" />
 
+    <ImageView
+        android:id="@+id/nothingFoundImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="210dp"
+        android:src="@drawable/placeholder_nothing_found_120"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/nothingFoundText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="346dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center"
+        android:text="@string/nothing_found"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:theme="@style/TextFormat"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/noInternetImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="210dp"
+        android:src="@drawable/placeholder_no_internet_120"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/noInternetText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="346dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center"
+        android:text="@string/no_internet"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:theme="@style/TextFormat"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/updateButton"
+        style="@style/UpdateButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginTop="458dp"
+        android:text="@string/update"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,15 @@
 package com.ivan.playlistmaker
 
-data class Track(val trackName: String,
-                 val artistName: String,
-                 val trackTime: String,
-                 val artworkUrl100: String)
+import android.icu.text.SimpleDateFormat
+import java.util.Locale
+
+data class Track(
+    val trackName: String,
+    val artistName: String,
+    val trackTimeMillis: Long,
+    val artworkUrl100: String
+) {
+    fun convertTrackTimeToLocale(trackTimeMilis: Long): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMilis)
+    }
+}

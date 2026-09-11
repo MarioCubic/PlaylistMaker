@@ -42,7 +42,7 @@
     </LinearLayout>
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/dark_mode"
+        android:id="@+id/themeSwitcher"
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_buttons_height"
         android:layout_marginTop="24dp"
@@ -68,7 +68,7 @@
         app:drawableTint="@color/ic_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dark_mode" />
+        app:layout_constraintTop_toBottomOf="@+id/themeSwitcher" />
 
     <TextView
         android:id="@+id/support"

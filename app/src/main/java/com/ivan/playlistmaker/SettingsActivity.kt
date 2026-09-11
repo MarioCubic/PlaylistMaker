@@ -8,9 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
+import com.ivan.playlistmaker.App.Companion.DARK_THEME
+import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("QueryPermissionsNeeded")
@@ -23,10 +26,18 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         val backButton = findViewById<ImageView>(R.id.back_button)
         val shareButton = findViewById<TextView>(R.id.share_app)
         val supportButton = findViewById<TextView>(R.id.support)
         val termsButton = findViewById<TextView>(R.id.terms)
+        val themeSwitcher = findViewById<SwitchCompat>(R.id.themeSwitcher)
+
+        themeSwitcher.isChecked = sharedPrefs.getBoolean(DARK_THEME, false)
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
+
 
         backButton.setOnClickListener {
             finish()

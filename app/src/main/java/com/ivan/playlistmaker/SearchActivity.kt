@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -17,24 +18,19 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
 
 class SearchActivity : AppCompatActivity() {
 
-    private val iTunesUrl = "https://itunes.apple.com/"
+    val presenter = Presenter()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val tracks = ArrayList<Track>()
-    private val adapter = TrackAdapter(tracks)
-    private val iTunesService = retrofit.create(ItunesApi::class.java)
+
+    var tracks = ArrayList<Track>()
+    var history = ArrayDeque<Track>()
+    private val resultsAdapter = TrackAdapter(tracks)
+    private val historyAdapter = TrackAdapter(history, true)
     private lateinit var searchField: EditText
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +42,17 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPrefs)
+        history.addAll(searchHistory.readSharedPrefs())
+        historyAdapter.notifyDataSetChanged()
+
+
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
-            adapter = this@SearchActivity.adapter
+            adapter = this@SearchActivity.resultsAdapter
+        }
+        findViewById<RecyclerView>(R.id.historyRecycler).apply {
+            adapter = this@SearchActivity.historyAdapter
         }
         searchField = findViewById(R.id.search_input)
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
@@ -55,22 +60,8 @@ class SearchActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
-
-
-        val simpleTextWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.isVisible = !s.isNullOrEmpty()
-            }
-
-
+        searchField.post {
+            searchField.requestFocus()
         }
 
 
@@ -79,6 +70,46 @@ class SearchActivity : AppCompatActivity() {
         val noInternetImg = findViewById<ImageView>(R.id.noInternetImg)
         val noInternetText = findViewById<TextView>(R.id.noInternetText)
         val updateButton = findViewById<Button>(R.id.updateButton)
+        val historyRecycler = findViewById<RecyclerView>(R.id.historyRecycler)
+
+        val simpleTextWatcher = object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                historyAdapter.notifyDataSetChanged()
+                historyRecycler.visibility =
+                    if (searchField.hasFocus() && s?.isEmpty() == true && !history.isEmpty()) View.VISIBLE else View.GONE
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                clearButton.isVisible = !s.isNullOrEmpty()
+                historyAdapter.notifyDataSetChanged()
+                historyRecycler.visibility =
+                    if (searchField.hasFocus() && s?.isEmpty() == true && !history.isEmpty()) View.VISIBLE else View.GONE
+            }
+
+
+        }
+        resultsAdapter.onTrackClick = { track ->
+            searchHistory.addTrackToHistory(track, history)
+            historyAdapter.notifyDataSetChanged()
+
+        }
+        historyAdapter.onClearHistoryClick = {
+            history.clear()
+            searchHistory.clearSharedPrefs()
+            historyRecycler.visibility = View.GONE
+            historyAdapter.notifyDataSetChanged()
+        }
+        searchField.setOnFocusChangeListener { view, hasFocus ->
+            historyRecycler.visibility =
+                if (hasFocus && searchField.text.isEmpty() && !history.isEmpty()) View.VISIBLE else View.GONE
+            historyAdapter.notifyDataSetChanged()
+        }
+
         fun allPlaceholdersDisabled() {
             nothingFoundText.isGone = true
             nothingFoundImg.isGone = true
@@ -88,79 +119,71 @@ class SearchActivity : AppCompatActivity() {
         }
 
         fun noInternetPlaceholders() {
-            adapter.notifyDataSetChanged()
+            resultsAdapter.notifyDataSetChanged()
             noInternetImg.isVisible = true
             noInternetText.isVisible = true
             updateButton.isVisible = true
         }
 
         fun nothingFoundPlaceholders() {
-            adapter.notifyDataSetChanged()
+            resultsAdapter.notifyDataSetChanged()
             nothingFoundText.isVisible = true
             nothingFoundImg.isVisible = true
         }
+
         clearButton.setOnClickListener {
             searchField.setText("")
             searchField.clearFocus()
             allPlaceholdersDisabled()
             tracks.clear()
-            adapter.notifyDataSetChanged()
+            resultsAdapter.notifyDataSetChanged()
 
 
             WindowInsetsControllerCompat(window, window.decorView)
                 .hide(WindowInsetsCompat.Type.ime())
         }
 
-        fun searchAction() {
-            if (searchField.text.isBlank()) return
-            iTunesService.search(searchField.text.toString())
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse?>,
-                        response: Response<TrackResponse?>
-                    ) {
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            allPlaceholdersDisabled()
-                            val result = response.body()?.results
-                            if (result.isNullOrEmpty()) {
-                                allPlaceholdersDisabled()
-                                nothingFoundPlaceholders()
-                            } else {
-                                tracks.addAll(result)
-                                adapter.notifyDataSetChanged()
+        presenter.screenState.observe(this) { screenState ->
+            when (screenState) {
+                is SearchScreenState.DataLoaded -> {
+                    allPlaceholdersDisabled()
+                    tracks.clear()
+                    tracks.addAll(screenState.data)
+                    resultsAdapter.notifyDataSetChanged()
 
-                            }
-                        } else {
-                            tracks.clear()
-                            allPlaceholdersDisabled()
-                            noInternetPlaceholders()
-                        }
-                    }
+                }
 
-                    override fun onFailure(
-                        call: Call<TrackResponse?>,
-                        t: Throwable
-                    ) {
-                        tracks.clear()
-                        allPlaceholdersDisabled()
-                        noInternetPlaceholders()
-                    }
-                })
+                is SearchScreenState.NothingFound -> {
+                    tracks.clear()
+                    resultsAdapter.notifyDataSetChanged()
+                    allPlaceholdersDisabled()
+                    nothingFoundPlaceholders()
+                }
 
+                is SearchScreenState.NetworkError -> {
+                    tracks.clear()
+                    resultsAdapter.notifyDataSetChanged()
+                    allPlaceholdersDisabled()
+                    noInternetPlaceholders()
+                }
+
+                else -> {}
+            }
         }
+
         searchField.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchAction()
+            if (actionId == EditorInfo.IME_ACTION_DONE && !searchField.text.isBlank()) {
+                presenter.fetchTracks(searchField.text.toString())
             }
             false
         }
-        updateButton.setOnClickListener { searchAction() }
+        updateButton.setOnClickListener { presenter.fetchTracks(searchField.text.toString()) }
 
         searchField.addTextChangedListener(simpleTextWatcher)
 
 
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

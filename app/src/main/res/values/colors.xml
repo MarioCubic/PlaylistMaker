@@ -15,5 +15,7 @@
     <color name="artist_name_color">#AEAFB4</color>
     <color name="update_button_color">#1A1B22</color>
     <color name="update_button_text_color">#FFFFFF</color>
-
+    <color name="switch_color_thumb">#ececec</color>
+    <color name="switch_color_track">#b2b2b2</color>
+    <color name="cursor_color">#3772E7</color>
 </resources>

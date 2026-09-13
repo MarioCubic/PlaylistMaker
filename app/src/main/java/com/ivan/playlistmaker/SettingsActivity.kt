@@ -12,6 +12,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.net.toUri
+import com.google.android.material.appbar.MaterialToolbar
 import com.ivan.playlistmaker.App.Companion.DARK_THEME
 import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
 
@@ -27,11 +28,12 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        val backButton = findViewById<ImageView>(R.id.back_button)
+        val navToolbar = findViewById<MaterialToolbar>(R.id.header)
         val shareButton = findViewById<TextView>(R.id.share_app)
         val supportButton = findViewById<TextView>(R.id.support)
         val termsButton = findViewById<TextView>(R.id.terms)
         val themeSwitcher = findViewById<SwitchCompat>(R.id.themeSwitcher)
+
 
         themeSwitcher.isChecked = sharedPrefs.getBoolean(DARK_THEME, false)
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
@@ -39,35 +41,35 @@ class SettingsActivity : AppCompatActivity() {
         }
 
 
-        backButton.setOnClickListener {
+        navToolbar.setNavigationOnClickListener {
             finish()
         }
         shareButton.setOnClickListener {
-            val shareIntent = Intent (Intent.ACTION_SEND).apply {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT,getString(R.string.practicum_link))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.practicum_link))
             }
             startActivity(Intent.createChooser(shareIntent, "Поделиться"))
         }
         supportButton.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = "mailto:".toUri()
-                val adresses: Array <String> = arrayOf(getString(R.string.email))
+                val adresses: Array<String> = arrayOf(getString(R.string.email))
                 putExtra(Intent.EXTRA_EMAIL, adresses)
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.theme_of_mail))
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
 
             }
-                startActivity(supportIntent)
-            }
+            startActivity(supportIntent)
+        }
         termsButton.setOnClickListener {
             val webpage: Uri = getString(R.string.terms_link).toUri()
             val termsIntent = Intent(Intent.ACTION_VIEW, webpage)
             startActivity(termsIntent)
         }
 
-        }
-
-
     }
+
+
+}
 

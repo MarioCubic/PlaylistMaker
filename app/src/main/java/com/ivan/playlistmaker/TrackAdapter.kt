@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
-class TrackAdapter(val userData: List<Track>, private val showHeaderFooter: Boolean = false) :
+class TrackAdapter(val userData: List<Track>, private var showHeaderFooter: Boolean = false) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onTrackClick: ((Track) -> Unit)? = null
     var onClearHistoryClick: (() -> Unit)? = null
@@ -38,7 +38,7 @@ class TrackAdapter(val userData: List<Track>, private val showHeaderFooter: Bool
                 FooterViewHolder(
                     LayoutInflater.from(parent.context)
                         .inflate(R.layout.search_history_footer, parent, false)
-                ){
+                ) {
                     onClearHistoryClick?.invoke()
                 }
             }
@@ -76,7 +76,7 @@ class TrackAdapter(val userData: List<Track>, private val showHeaderFooter: Bool
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (!showHeaderFooter) {
+        if (!showHeaderFooter || userData.isEmpty()) {
             return VIEW_TYPE_TRACK
         }
         if (position == 0) {
@@ -89,7 +89,7 @@ class TrackAdapter(val userData: List<Track>, private val showHeaderFooter: Bool
     }
 
     override fun getItemCount(): Int {
-        return if (showHeaderFooter) {
+        return if (showHeaderFooter && !userData.isEmpty()) {
             userData.size + 2
         } else {
             userData.size
@@ -130,6 +130,11 @@ class TrackAdapter(val userData: List<Track>, private val showHeaderFooter: Bool
             }
         }
     }
+
+    fun changeHeaderFooter(showHeaderFooter: Boolean) {
+        this.showHeaderFooter = showHeaderFooter
+    }
+
 
     private companion object {
         const val VIEW_TYPE_TRACK = 0

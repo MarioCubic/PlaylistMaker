@@ -10,45 +10,28 @@
 
 
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/header"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/settings_buttons_height"
-        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginEnd="12dp"
-            android:paddingStart="4dp"
-            android:paddingTop="4dp"
-            android:src="@drawable/ic_back_arrow_48"
-            app:tint="@color/text_color" />
-
-        <TextView
-            android:theme="@style/TextFormat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="@font/ys_display_medium"
-            android:textStyle="bold"
-            android:text="@string/settings"
-            android:textSize="22sp" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back_arrow_48"
+        app:title="@string/settings"
+        app:titleTextAppearance="@style/ToolbarText"
+        app:navigationIconTint="@color/text_color"/>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/themeSwitcher"
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_buttons_height"
         android:layout_marginTop="24dp"
-        android:paddingEnd="6dp"
         android:paddingStart="16dp"
+        android:paddingEnd="6dp"
         android:text="@string/dark_theme"
+        app:thumbTint="@color/switch_color_thumb"
+        app:trackTint="@color/switch_color_track"
         android:theme="@style/TextFormat"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

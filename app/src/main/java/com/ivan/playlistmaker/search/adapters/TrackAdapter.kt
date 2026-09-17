@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.search.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.ivan.playlistmaker.R
+import com.ivan.playlistmaker.model.Track
 
 class TrackAdapter(val userData: List<Track>, private var showHeaderFooter: Boolean = false) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -104,10 +106,10 @@ class TrackAdapter(val userData: List<Track>, private var showHeaderFooter: Bool
 
         @SuppressLint("SetTextI18n")
         fun onBind(track: Track) {
-            val radius = (2 * itemView.resources.displayMetrics.density).toInt()
+            val radius = (CORNER_RADIUS * itemView.resources.displayMetrics.density).toInt()
             Glide.with(itemView)
                 .load(track.artworkUrl100)
-                .placeholder(R.drawable.placeholder)
+                .placeholder(R.drawable.placeholder_track_45)
                 .centerCrop()
                 .transform(RoundedCorners(radius))
                 .into(coverView)
@@ -140,7 +142,6 @@ class TrackAdapter(val userData: List<Track>, private var showHeaderFooter: Bool
         const val VIEW_TYPE_TRACK = 0
         const val VIEW_TYPE_HEADER = 1
         const val VIEW_TYPE_FOOTER = 2
+        const val CORNER_RADIUS = 2
     }
 }
-
-

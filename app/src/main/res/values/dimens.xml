@@ -4,4 +4,5 @@
     <dimen name="settings_buttons_height">56dp</dimen>
     <dimen name="settings_buttons_text_size">16sp</dimen>
     <dimen name="settings_buttons_text_margin">16dp</dimen>
+    <dimen name="player_description_text_margin">17dp</dimen>
 </resources>

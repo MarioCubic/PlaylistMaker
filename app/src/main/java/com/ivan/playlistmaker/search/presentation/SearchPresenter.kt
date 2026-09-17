@@ -1,8 +1,12 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.search.presentation
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.ivan.playlistmaker.model.HistoryActions
+import com.ivan.playlistmaker.model.Track
+import com.ivan.playlistmaker.search.ApiRepository
+import com.ivan.playlistmaker.search.HistoryRepository
 
 
 class Presenter(sharedPreferences: SharedPreferences? = null) {
@@ -37,7 +41,7 @@ class Presenter(sharedPreferences: SharedPreferences? = null) {
 
     }
 
-    fun updateHistory(action: HistoryAction) {
+    fun updateHistory(action: HistoryActions) {
         historyRepository.clearAndReadHistory(
             action,
             onRead = { trackHistory ->

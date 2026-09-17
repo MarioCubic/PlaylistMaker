@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.search
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,10 +1,12 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.search
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ivan.playlistmaker.App.Companion.SEARCH_HISTORY
+import com.ivan.playlistmaker.model.HistoryActions
+import com.ivan.playlistmaker.model.Track
 
 class HistoryRepository(private val sharedPreferences: SharedPreferences?) {
     private val searchHistory = ArrayDeque<Track>()
@@ -18,24 +20,24 @@ class HistoryRepository(private val sharedPreferences: SharedPreferences?) {
     }
 
     fun clearAndReadHistory(
-        action: HistoryAction,
+        action: HistoryActions,
         onRead: (ArrayDeque<Track>) -> Unit,
         onClear: (ArrayDeque<Track>) -> Unit,
         onHide: (ArrayDeque<Track>) -> Unit
     ) {
-        if (action == HistoryAction.READ) {
+        if (action == HistoryActions.READ) {
             searchHistory.clear()
             searchHistory.addAll(readSharedPrefs())
             onRead(searchHistory)
 
         }
-        if (action == HistoryAction.CLEAR) {
+        if (action == HistoryActions.CLEAR) {
             clearSharedPrefs()
             searchHistory.clear()
             onClear(searchHistory)
 
         }
-        if (action == HistoryAction.HIDE) {
+        if (action == HistoryActions.HIDE) {
             searchHistory.clear()
             onHide(searchHistory)
 

@@ -1,5 +1,6 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.search
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,7 +18,15 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
+import com.ivan.playlistmaker.search.presentation.Presenter
+import com.ivan.playlistmaker.R
+import com.ivan.playlistmaker.search.presentation.SearchScreenState
+import com.ivan.playlistmaker.search.adapters.TrackAdapter
 import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
+import com.ivan.playlistmaker.model.HistoryActions
+import com.ivan.playlistmaker.model.Track
+import com.ivan.playlistmaker.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
 
@@ -38,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
         }
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         val presenter = Presenter(sharedPrefs)
-        presenter.updateHistory(HistoryAction.READ)
+        presenter.updateHistory(HistoryActions.READ)
 
 
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
@@ -68,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 if (searchField.hasFocus() && s?.isEmpty() == true) {
-                    presenter.updateHistory(HistoryAction.READ)
+                    presenter.updateHistory(HistoryActions.READ)
                 }
 
             }
@@ -76,7 +85,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 if (searchField.hasFocus() && s?.isEmpty() == true) {
-                    presenter.updateHistory(HistoryAction.READ)
+                    presenter.updateHistory(HistoryActions.READ)
                 }
             }
 
@@ -84,15 +93,19 @@ class SearchActivity : AppCompatActivity() {
         }
         adapter.onTrackClick = { track ->
             presenter.saveHistory(track)
+            val json = Gson().toJson(track)
+            val playerIntent = Intent(this, PlayerActivity::class.java)
+            playerIntent.putExtra("track", json)
+            startActivity(playerIntent)
 
         }
         adapter.onClearHistoryClick = {
             tracks.clear()
-            presenter.updateHistory(HistoryAction.CLEAR)
+            presenter.updateHistory(HistoryActions.CLEAR)
         }
         searchField.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && searchField.text.isEmpty()) {
-                presenter.updateHistory(HistoryAction.READ)
+                presenter.updateHistory(HistoryActions.READ)
             }
 
 

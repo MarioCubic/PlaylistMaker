@@ -1,20 +1,19 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.settings
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.net.toUri
 import com.google.android.material.appbar.MaterialToolbar
-import com.ivan.playlistmaker.App.Companion.DARK_THEME
-import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
+import com.ivan.playlistmaker.App
+import com.ivan.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("QueryPermissionsNeeded")
@@ -27,7 +26,7 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(App.PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         val navToolbar = findViewById<MaterialToolbar>(R.id.header)
         val shareButton = findViewById<TextView>(R.id.share_app)
         val supportButton = findViewById<TextView>(R.id.support)
@@ -35,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         val themeSwitcher = findViewById<SwitchCompat>(R.id.themeSwitcher)
 
 
-        themeSwitcher.isChecked = sharedPrefs.getBoolean(DARK_THEME, false)
+        themeSwitcher.isChecked = sharedPrefs.getBoolean(App.DARK_THEME, false)
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switchTheme(checked)
         }
@@ -72,4 +71,3 @@ class SettingsActivity : AppCompatActivity() {
 
 
 }
-

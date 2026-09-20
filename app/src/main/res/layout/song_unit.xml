@@ -12,7 +12,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_gravity="start|center"
-        tools:src="@drawable/placeholder"
+        tools:src="@drawable/placeholder_track_45"
         android:layout_marginStart="13dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"

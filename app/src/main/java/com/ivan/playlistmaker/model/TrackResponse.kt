@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.model
 
 
 class TrackResponse(

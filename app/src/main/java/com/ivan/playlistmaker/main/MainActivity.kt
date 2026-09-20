@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker
+package com.ivan.playlistmaker.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.ivan.playlistmaker.mediaLibrary.MediaActivity
+import com.ivan.playlistmaker.R
+import com.ivan.playlistmaker.settings.SettingsActivity
+import com.ivan.playlistmaker.search.SearchActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,17 +28,16 @@ class MainActivity : AppCompatActivity() {
 
 
         searchButton.setOnClickListener {
-            val searchIntent = Intent (this, SearchActivity::class.java)
+            val searchIntent = Intent(this, SearchActivity::class.java)
             startActivity(searchIntent)
         }
         mediaButton.setOnClickListener {
-            val mediaIntent = Intent (this, MediaActivity::class.java)
+            val mediaIntent = Intent(this, MediaActivity::class.java)
             startActivity(mediaIntent)
         }
         setButton.setOnClickListener {
-            val setIntent = Intent (this, SettingsActivity::class.java)
+            val setIntent = Intent(this, SettingsActivity::class.java)
             startActivity(setIntent)
         }
     }
 }
-

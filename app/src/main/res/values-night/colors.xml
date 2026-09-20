@@ -17,4 +17,9 @@
     <color name="update_button_text_color">#1A1B22</color>
     <color name="switch_color_thumb">#3772E7</color>
     <color name="switch_color_track">#9FBBF3</color>
+    <color name="player_track_description_color">#AEAFB4</color>
+    <color name="player_track_data_color">#FFFFFF</color>
+    <color name="player_play_button_color">#FFFFFF</color>
+    <color name="player_add_buttons_color">#FFFFFF</color>
+
 </resources>

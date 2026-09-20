@@ -9,7 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -17,28 +19,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="24dp" />
+            app:layout_constraintGuide_begin="8dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/rightBorder24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_end="24dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/rightBorder16"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="16dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/leftBorder16"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="16dp" />
+            app:layout_constraintGuide_end="8dp" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -64,7 +52,9 @@
             android:id="@+id/collectionView"
             android:layout_width="312dp"
             android:layout_height="312dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="82dp"
+            android:layout_marginEnd="24dp"
             android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -157,7 +147,7 @@
             android:layout_marginTop="50dp"
             android:text="@string/length"
             app:layout_constraintEnd_toStartOf="@+id/centerBorder"
-            app:layout_constraintStart_toStartOf="@+id/leftBorder16"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/playPauseButton" />
 
         <TextView
@@ -166,7 +156,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            app:layout_constraintEnd_toEndOf="@+id/rightBorder16"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerBorder"
             app:layout_constraintTop_toBottomOf="@+id/playPauseButton"
             tools:text="3:37" />
@@ -187,7 +177,7 @@
             android:layout_marginTop="@dimen/player_description_text_margin"
             android:text="@string/collection"
             app:layout_constraintEnd_toStartOf="@+id/centerBorder"
-            app:layout_constraintStart_toStartOf="@+id/leftBorder16"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lengthDescription" />
 
         <TextView
@@ -200,7 +190,7 @@
             android:gravity="end"
             android:marqueeRepeatLimit="2"
             android:singleLine="true"
-            app:layout_constraintEnd_toStartOf="@+id/rightBorder16"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerBorder"
             app:layout_constraintTop_toBottomOf="@+id/length"
             tools:text="Nights Like These" />
@@ -220,15 +210,16 @@
             android:layout_marginTop="@dimen/player_description_text_margin"
             android:text="@string/year"
             app:layout_constraintEnd_toStartOf="@+id/centerBorder"
-            app:layout_constraintStart_toStartOf="@+id/leftBorder16"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/collectionDescription" />
+
         <TextView
             android:id="@+id/year"
             style="@style/PlayerTrackDataTextFormat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/player_description_text_margin"
-            app:layout_constraintEnd_toEndOf="@+id/rightBorder16"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerBorder"
             app:layout_constraintTop_toBottomOf="@+id/collection"
             tools:text="2012" />
@@ -248,7 +239,7 @@
             android:layout_marginTop="@dimen/player_description_text_margin"
             android:text="@string/genre"
             app:layout_constraintEnd_toStartOf="@+id/centerBorder"
-            app:layout_constraintStart_toStartOf="@+id/leftBorder16"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/yearDescription" />
 
         <TextView
@@ -257,7 +248,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/player_description_text_margin"
-            app:layout_constraintEnd_toEndOf="@+id/rightBorder16"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerBorder"
             app:layout_constraintTop_toBottomOf="@+id/year"
             tools:text="Pop" />
@@ -277,7 +268,7 @@
             android:layout_marginTop="@dimen/player_description_text_margin"
             android:text="@string/country"
             app:layout_constraintEnd_toStartOf="@+id/centerBorder"
-            app:layout_constraintStart_toStartOf="@+id/leftBorder16"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/genreDescription" />
 
         <TextView
@@ -286,7 +277,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/player_description_text_margin"
-            app:layout_constraintEnd_toEndOf="@+id/rightBorder16"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerBorder"
             app:layout_constraintTop_toBottomOf="@+id/genre"
             tools:text="USA" />

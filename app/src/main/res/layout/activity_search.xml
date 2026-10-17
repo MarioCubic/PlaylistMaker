@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".search.SearchActivity">
 
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -18,6 +19,18 @@
         app:title="@string/search"
         app:titleTextAppearance="@style/ToolbarText"
         app:navigationIconTint="@color/text_color"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="248dp"
+        android:indeterminateTint="@color/progress_bar_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/frameLayout"

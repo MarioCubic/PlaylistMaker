@@ -2,12 +2,15 @@ package com.ivan.playlistmaker.search
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +22,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
-import com.ivan.playlistmaker.search.presentation.Presenter
+import com.ivan.playlistmaker.search.presentation.SearchPresenter
 import com.ivan.playlistmaker.R
 import com.ivan.playlistmaker.search.presentation.SearchScreenState
 import com.ivan.playlistmaker.search.adapters.TrackAdapter
@@ -34,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
     private var tracks = ArrayList<Track>()
     private val adapter = TrackAdapter(tracks)
     private lateinit var searchField: EditText
+    private var isClickAllowed = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +50,8 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        val presenter = Presenter(sharedPrefs)
-        presenter.updateHistory(HistoryActions.READ)
+        val searchPresenter = SearchPresenter(sharedPrefs)
+        searchPresenter.updateHistory(HistoryActions.READ)
 
 
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
@@ -63,49 +67,56 @@ class SearchActivity : AppCompatActivity() {
             searchField.requestFocus()
         }
 
-
+        val searchRunnable = Runnable { searchPresenter.fetchTracks(searchField.text.toString()) }
+        val searchHandler = Handler(Looper.getMainLooper())
         val nothingFoundImg = findViewById<ImageView>(R.id.nothingFoundImg)
         val nothingFoundText = findViewById<TextView>(R.id.nothingFoundText)
         val noInternetImg = findViewById<ImageView>(R.id.noInternetImg)
         val noInternetText = findViewById<TextView>(R.id.noInternetText)
         val updateButton = findViewById<Button>(R.id.updateButton)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
-        val simpleTextWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
+        fun searchDebounce() {
+            if (searchField.text.isBlank()) {
+                searchHandler.removeCallbacks(searchRunnable)
 
+            } else {
+                progressBar.isVisible = true
+                searchHandler.removeCallbacks(searchRunnable)
+                searchHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                if (searchField.hasFocus() && s?.isEmpty() == true) {
-                    presenter.updateHistory(HistoryActions.READ)
-                }
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.isVisible = !s.isNullOrEmpty()
-                if (searchField.hasFocus() && s?.isEmpty() == true) {
-                    presenter.updateHistory(HistoryActions.READ)
-                }
-            }
-
 
         }
-        adapter.onTrackClick = { track ->
-            presenter.saveHistory(track)
-            val json = Gson().toJson(track)
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            playerIntent.putExtra("track", json)
-            startActivity(playerIntent)
 
+
+        fun clickDebounce(): Boolean {
+            val current = isClickAllowed
+            if (isClickAllowed) {
+                isClickAllowed = false
+                searchHandler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+            }
+            return current
+        }
+
+
+
+        adapter.onTrackClick = { track ->
+            if (clickDebounce()) {
+                searchHandler.removeCallbacks(searchRunnable)
+                searchPresenter.saveHistory(track)
+                val json = Gson().toJson(track)
+                val playerIntent = Intent(this, PlayerActivity::class.java)
+                playerIntent.putExtra("track", json)
+                startActivity(playerIntent)
+            }
         }
         adapter.onClearHistoryClick = {
             tracks.clear()
-            presenter.updateHistory(HistoryActions.CLEAR)
+            searchPresenter.updateHistory(HistoryActions.CLEAR)
         }
         searchField.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && searchField.text.isEmpty()) {
-                presenter.updateHistory(HistoryActions.READ)
+                searchPresenter.updateHistory(HistoryActions.READ)
             }
 
 
@@ -115,6 +126,7 @@ class SearchActivity : AppCompatActivity() {
                 noInternetImg.isGone = true
                 noInternetText.isGone = true
                 updateButton.isGone = true
+                progressBar.isGone = true
             }
 
             fun noInternetPlaceholders() {
@@ -130,10 +142,35 @@ class SearchActivity : AppCompatActivity() {
                 nothingFoundImg.isVisible = true
             }
 
+            val simpleTextWatcher = object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
 
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    clearButton.isVisible = !s.isNullOrEmpty()
+                    if (searchField.hasFocus() && s?.isBlank() == true) {
+                        allPlaceholdersDisabled()
+                        searchPresenter.updateHistory(HistoryActions.READ)
+                    } else {
+                        tracks.clear()
+                        adapter.notifyDataSetChanged()
+                    }
+                    searchDebounce()
+
+                }
+
+
+            }
 
             clearButton.setOnClickListener {
                 searchField.setText("")
+
                 searchField.clearFocus()
                 allPlaceholdersDisabled()
                 tracks.clear()
@@ -144,7 +181,7 @@ class SearchActivity : AppCompatActivity() {
                     .hide(WindowInsetsCompat.Type.ime())
             }
 
-            presenter.screenState.observe(this) { screenState ->
+            searchPresenter.screenState.observe(this) { screenState ->
                 when (screenState) {
                     is SearchScreenState.DataLoaded -> {
                         adapter.changeHeaderFooter(false)
@@ -157,7 +194,6 @@ class SearchActivity : AppCompatActivity() {
 
                     is SearchScreenState.NothingFound -> {
                         tracks.clear()
-
                         adapter.notifyDataSetChanged()
                         allPlaceholdersDisabled()
                         nothingFoundPlaceholders()
@@ -182,15 +218,16 @@ class SearchActivity : AppCompatActivity() {
                     else -> {}
                 }
             }
-
             searchField.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE && !searchField.text.isBlank()) {
-                    presenter.fetchTracks(searchField.text.toString())
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    searchField.clearFocus()
                 }
                 false
             }
-            updateButton.setOnClickListener { presenter.fetchTracks(searchField.text.toString()) }
-
+            updateButton.setOnClickListener {
+                searchHandler.removeCallbacks(searchRunnable)
+                searchHandler.post(searchRunnable)
+            }
             searchField.addTextChangedListener(simpleTextWatcher)
 
 
@@ -200,7 +237,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_INPUT, searchField.toString())
+        outState.putString(SEARCH_INPUT, searchField.text.toString())
 
     }
 
@@ -212,6 +249,8 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_INPUT = "SEARCH_INPUT"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
 

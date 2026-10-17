@@ -1,6 +1,8 @@
 package com.ivan.playlistmaker.player
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,7 +20,9 @@ import com.ivan.playlistmaker.R
 import com.ivan.playlistmaker.model.Track
 
 class PlayerActivity : AppCompatActivity() {
-
+    val playerPresenter = PlayerPresenter()
+    val trackTimeHandler = Handler(Looper.getMainLooper())
+    var timeThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,7 @@ class PlayerActivity : AppCompatActivity() {
         val json = intent.getStringExtra("track")
         val type = object : TypeToken<Track>() {}.type
         val track: Track = Gson().fromJson(json, type)
+        val url = track.previewUrl
 
         val navToolbar = findViewById<MaterialToolbar>(R.id.header)
         navToolbar.setNavigationOnClickListener {
@@ -47,6 +52,7 @@ class PlayerActivity : AppCompatActivity() {
         val likeButton = findViewById<ImageView>(R.id.likeButton)
         val playbackTime = findViewById<TextView>(R.id.playbackTime)
 
+
         val length = findViewById<TextView>(R.id.length)
         val collection = findViewById<TextView>(R.id.collection)
         val year = findViewById<TextView>(R.id.year)
@@ -56,9 +62,31 @@ class PlayerActivity : AppCompatActivity() {
         val collectionGroup = findViewById<Group>(R.id.collectionGroup)
         val yearGroup = findViewById<Group>(R.id.yearGroup)
 
+        fun startUpdateTime() {
+            if (timeThread?.isAlive == true) return
+
+            timeThread = Thread {
+                try {
+                    while (!Thread.currentThread().isInterrupted) {
+                        trackTimeHandler.post {
+                            playbackTime.text = playerPresenter.localeTimeFormat()
+                        }
+                        Thread.sleep(500)
+                    }
+                } catch (e: InterruptedException) {
+                }
+            }
+
+            timeThread?.start()
+        }
+        fun stopUpdateTime() {
+            timeThread?.interrupt()
+            timeThread = null
+        }
+
 
         val radius = (CORNER_RADIUS * collectionCover.resources.displayMetrics.density).toInt()
-        fun getCoverArtwork() = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+        fun getCoverArtwork() = track.artworkUrl100.replaceAfterLast(DELIMITER, REPLACEMENT)
         Glide.with(collectionCover)
             .load(getCoverArtwork())
             .placeholder(R.drawable.placeholder_track_312)
@@ -76,7 +104,62 @@ class PlayerActivity : AppCompatActivity() {
 
         trackName.isSelected = true
         artistName.isSelected = true
+        playerPresenter.prepareTrack(url)
 
+
+
+        playerPresenter.screenState.observe(this) { screenState ->
+            when (screenState) {
+                is PlayerScreenState.Preparing -> {
+                    playPauseButton.isEnabled = false
+                }
+
+                is PlayerScreenState.Prepared -> {
+                    playPauseButton.isEnabled = true
+                    playPauseButton.setImageResource(R.drawable.button_play_100)
+                    stopUpdateTime()
+                    playbackTime.text = CURRENT_TIME_TRACK
+                    playPauseButton.setOnClickListener {
+                        playerPresenter.playTrack()
+                    }
+                }
+
+                is PlayerScreenState.OnPlay -> {
+                    playPauseButton.setImageResource(R.drawable.button_pause_100)
+                    playPauseButton.setOnClickListener {
+                        playerPresenter.pauseTrack()
+                    }
+                    startUpdateTime()
+                }
+
+                is PlayerScreenState.OnPause -> {
+                    playPauseButton.setImageResource(R.drawable.button_play_100)
+                    playPauseButton.setOnClickListener {
+                        playerPresenter.playTrack()
+                    }
+                    stopUpdateTime()
+                }
+                is PlayerScreenState.OnRelease -> {
+                    stopUpdateTime()
+                }
+
+
+                else -> {}
+
+            }
+        }
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        playerPresenter.pauseTrack()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playerPresenter.releaseTrack()
     }
 
     fun viewVisibility(view: View, data: String): String {
@@ -88,7 +171,10 @@ class PlayerActivity : AppCompatActivity() {
         return ""
     }
 
-companion object{
-    const val CORNER_RADIUS = 8
-}
+    companion object {
+        const val CORNER_RADIUS = 8
+        const val CURRENT_TIME_TRACK = "00:00"
+        const val DELIMITER = '/'
+        const val REPLACEMENT = "512x512bb.jpg"
+    }
 }

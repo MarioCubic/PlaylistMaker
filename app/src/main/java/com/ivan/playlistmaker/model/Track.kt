@@ -12,7 +12,8 @@ data class Track(
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
-    val trackId: Long
+    val trackId: Long,
+    val previewUrl: String
 ) {
     fun convertTrackTimeToLocale(trackTimeMillis: Long): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)

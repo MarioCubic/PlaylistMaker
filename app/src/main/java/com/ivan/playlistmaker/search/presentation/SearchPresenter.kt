@@ -9,7 +9,7 @@ import com.ivan.playlistmaker.search.ApiRepository
 import com.ivan.playlistmaker.search.HistoryRepository
 
 
-class Presenter(sharedPreferences: SharedPreferences? = null) {
+class SearchPresenter(sharedPreferences: SharedPreferences? = null) {
     private val apiRepository = ApiRepository()
     private val historyRepository = HistoryRepository(sharedPreferences)
     private val _screenState = MutableLiveData<SearchScreenState>()

@@ -104,8 +104,9 @@ class PlayerActivity : AppCompatActivity() {
 
         trackName.isSelected = true
         artistName.isSelected = true
-        playerPresenter.prepareTrack(url)
-
+        if (url != null) {
+            playerPresenter.prepareTrack(url)
+        }
 
 
         playerPresenter.screenState.observe(this) { screenState ->

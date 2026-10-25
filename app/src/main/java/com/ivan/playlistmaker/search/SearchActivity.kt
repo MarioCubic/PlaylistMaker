@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -19,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
@@ -142,30 +141,17 @@ class SearchActivity : AppCompatActivity() {
                 nothingFoundImg.isVisible = true
             }
 
-            val simpleTextWatcher = object : TextWatcher {
-                override fun afterTextChanged(p0: Editable?) {
 
+            searchField.doOnTextChanged { s, _, _, _ ->
+                clearButton.isVisible = !s.isNullOrEmpty()
+                if (searchField.hasFocus() && s?.isBlank() == true) {
+                    allPlaceholdersDisabled()
+                    searchPresenter.updateHistory(HistoryActions.READ)
+                } else {
+                    tracks.clear()
+                    adapter.notifyDataSetChanged()
                 }
-
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    clearButton.isVisible = !s.isNullOrEmpty()
-                    if (searchField.hasFocus() && s?.isBlank() == true) {
-                        allPlaceholdersDisabled()
-                        searchPresenter.updateHistory(HistoryActions.READ)
-                    } else {
-                        tracks.clear()
-                        adapter.notifyDataSetChanged()
-                    }
-                    searchDebounce()
-
-                }
-
-
+                searchDebounce()
             }
 
             clearButton.setOnClickListener {
@@ -228,7 +214,7 @@ class SearchActivity : AppCompatActivity() {
                 searchHandler.removeCallbacks(searchRunnable)
                 searchHandler.post(searchRunnable)
             }
-            searchField.addTextChangedListener(simpleTextWatcher)
+
 
 
         }

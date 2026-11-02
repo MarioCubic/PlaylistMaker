@@ -1,47 +1,44 @@
-package com.ivan.playlistmaker.search
+package com.ivan.playlistmaker.search.data
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ivan.playlistmaker.App.Companion.SEARCH_HISTORY
+import com.ivan.playlistmaker.data.dto.Track
 import com.ivan.playlistmaker.model.HistoryActions
-import com.ivan.playlistmaker.model.Track
+import com.ivan.playlistmaker.search.domain.api.SearchHistoryRepository
 
-class HistoryRepository(private val sharedPreferences: SharedPreferences?) {
+class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences?) : SearchHistoryRepository {
     private val searchHistory = ArrayDeque<Track>()
 
-    fun saveHistory(track: Track?, onAddTrack: (ArrayDeque<Track>) -> Unit) {
+    override fun saveHistory(track: Track?, onAddTrack: (ArrayDeque<Track>) -> Unit) {
         addTrackToHistory(track)
         writeSharedPrefs(searchHistory)
         onAddTrack(searchHistory)
-
-
     }
 
-    fun clearAndReadHistory(
+    override fun clearAndReadHistory(
         action: HistoryActions,
         onRead: (ArrayDeque<Track>) -> Unit,
         onClear: (ArrayDeque<Track>) -> Unit,
         onHide: (ArrayDeque<Track>) -> Unit
     ) {
-        if (action == HistoryActions.READ) {
-            searchHistory.clear()
-            searchHistory.addAll(readSharedPrefs())
-            onRead(searchHistory)
-
-        }
-        if (action == HistoryActions.CLEAR) {
-            clearSharedPrefs()
-            searchHistory.clear()
-            onClear(searchHistory)
-
-        }
-        if (action == HistoryActions.HIDE) {
-            searchHistory.clear()
-            onHide(searchHistory)
-
-
+        when (action) {
+            HistoryActions.READ -> {
+                searchHistory.clear()
+                searchHistory.addAll(readSharedPrefs())
+                onRead(searchHistory)
+            }
+            HistoryActions.CLEAR -> {
+                clearSharedPrefs()
+                searchHistory.clear()
+                onClear(searchHistory)
+            }
+            HistoryActions.HIDE -> {
+                searchHistory.clear()
+                onHide(searchHistory)
+            }
         }
     }
 
@@ -64,7 +61,7 @@ class HistoryRepository(private val sharedPreferences: SharedPreferences?) {
 
     private fun writeSharedPrefs(searchHistory: ArrayDeque<Track>) {
         val json = Gson().toJson(searchHistory)
-        sharedPreferences?.edit() {
+        sharedPreferences?.edit {
             putString(SEARCH_HISTORY, json)
         }
     }
@@ -80,12 +77,9 @@ class HistoryRepository(private val sharedPreferences: SharedPreferences?) {
 
         if (json != null) {
             val type = object : TypeToken<ArrayDeque<Track>>() {}.type
-            val result: ArrayDeque<Track> = Gson().fromJson(json, type)
-            return result
+            return Gson().fromJson(json, type)
         }
 
         return ArrayDeque()
     }
 }
-
-

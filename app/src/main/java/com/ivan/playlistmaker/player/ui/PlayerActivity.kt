@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.player
+package com.ivan.playlistmaker.player.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -17,10 +17,13 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ivan.playlistmaker.R
-import com.ivan.playlistmaker.model.Track
+import com.ivan.playlistmaker.creator.Creator
+import com.ivan.playlistmaker.data.dto.Track
+import com.ivan.playlistmaker.player.presentation.PlayerPresenter
+import com.ivan.playlistmaker.player.presentation.PlayerScreenState
 
 class PlayerActivity : AppCompatActivity() {
-    val playerPresenter = PlayerPresenter()
+    val playerPresenter = PlayerPresenter(Creator.providePlayerInteractor())
     val trackTimeHandler = Handler(Looper.getMainLooper())
     var timeThread: Thread? = null
 

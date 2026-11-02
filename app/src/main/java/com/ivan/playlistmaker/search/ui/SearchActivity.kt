@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.search
+package com.ivan.playlistmaker.search.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -24,20 +24,18 @@ import com.google.gson.Gson
 import com.ivan.playlistmaker.search.presentation.SearchPresenter
 import com.ivan.playlistmaker.R
 import com.ivan.playlistmaker.search.presentation.SearchScreenState
-import com.ivan.playlistmaker.search.adapters.TrackAdapter
-import com.ivan.playlistmaker.App.Companion.PLAYLIST_MAKER_PREFERENCES
+import com.ivan.playlistmaker.search.ui.adapters.TrackAdapter
 import com.ivan.playlistmaker.model.HistoryActions
-import com.ivan.playlistmaker.model.Track
-import com.ivan.playlistmaker.player.PlayerActivity
+import com.ivan.playlistmaker.creator.Creator
+import com.ivan.playlistmaker.data.dto.Track
+import com.ivan.playlistmaker.player.ui.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
-
 
     private var tracks = ArrayList<Track>()
     private val adapter = TrackAdapter(tracks)
     private lateinit var searchField: EditText
     private var isClickAllowed = true
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +46,12 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        val searchPresenter = SearchPresenter(sharedPrefs)
-        searchPresenter.updateHistory(HistoryActions.READ)
 
+        val searchPresenter = SearchPresenter(
+            Creator.provideTracksInteractor(),
+            Creator.provideSearchHistoryInteractor(this)
+        )
+        searchPresenter.updateHistory(HistoryActions.READ)
 
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
             adapter = this@SearchActivity.adapter
@@ -78,15 +78,12 @@ class SearchActivity : AppCompatActivity() {
         fun searchDebounce() {
             if (searchField.text.isBlank()) {
                 searchHandler.removeCallbacks(searchRunnable)
-
             } else {
                 progressBar.isVisible = true
                 searchHandler.removeCallbacks(searchRunnable)
                 searchHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
             }
-
         }
-
 
         fun clickDebounce(): Boolean {
             val current = isClickAllowed
@@ -96,8 +93,6 @@ class SearchActivity : AppCompatActivity() {
             }
             return current
         }
-
-
 
         adapter.onTrackClick = { track ->
             if (clickDebounce()) {
@@ -117,7 +112,6 @@ class SearchActivity : AppCompatActivity() {
             if (hasFocus && searchField.text.isEmpty()) {
                 searchPresenter.updateHistory(HistoryActions.READ)
             }
-
 
             fun allPlaceholdersDisabled() {
                 nothingFoundText.isGone = true
@@ -141,7 +135,6 @@ class SearchActivity : AppCompatActivity() {
                 nothingFoundImg.isVisible = true
             }
 
-
             searchField.doOnTextChanged { s, _, _, _ ->
                 clearButton.isVisible = !s.isNullOrEmpty()
                 if (searchField.hasFocus() && s?.isBlank() == true) {
@@ -156,12 +149,10 @@ class SearchActivity : AppCompatActivity() {
 
             clearButton.setOnClickListener {
                 searchField.setText("")
-
                 searchField.clearFocus()
                 allPlaceholdersDisabled()
                 tracks.clear()
                 adapter.notifyDataSetChanged()
-
 
                 WindowInsetsControllerCompat(window, window.decorView)
                     .hide(WindowInsetsCompat.Type.ime())
@@ -175,23 +166,19 @@ class SearchActivity : AppCompatActivity() {
                         tracks.clear()
                         tracks.addAll(screenState.data)
                         adapter.notifyDataSetChanged()
-
                     }
-
                     is SearchScreenState.NothingFound -> {
                         tracks.clear()
                         adapter.notifyDataSetChanged()
                         allPlaceholdersDisabled()
                         nothingFoundPlaceholders()
                     }
-
                     is SearchScreenState.NetworkError -> {
                         tracks.clear()
                         adapter.notifyDataSetChanged()
                         allPlaceholdersDisabled()
                         noInternetPlaceholders()
                     }
-
                     is SearchScreenState.SearchHistory -> {
                         tracks.clear()
                         adapter.changeHeaderFooter(true)
@@ -199,8 +186,6 @@ class SearchActivity : AppCompatActivity() {
                         tracks.addAll(screenState.data)
                         adapter.notifyDataSetChanged()
                     }
-
-
                     else -> {}
                 }
             }
@@ -214,22 +199,16 @@ class SearchActivity : AppCompatActivity() {
                 searchHandler.removeCallbacks(searchRunnable)
                 searchHandler.post(searchRunnable)
             }
-
-
-
         }
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_INPUT, searchField.text.toString())
-
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-
         searchField.setText(savedInstanceState.getString(SEARCH_INPUT))
     }
 
@@ -238,6 +217,4 @@ class SearchActivity : AppCompatActivity() {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
-
-
 }

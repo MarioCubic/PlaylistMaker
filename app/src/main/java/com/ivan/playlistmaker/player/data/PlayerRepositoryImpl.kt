@@ -1,13 +1,13 @@
-package com.ivan.playlistmaker.player
+package com.ivan.playlistmaker.player.data
 
 import android.media.MediaPlayer
+import com.ivan.playlistmaker.player.domain.api.PlayerRepository
 
-class PlayerService {
-
+class PlayerRepositoryImpl : PlayerRepository {
 
     private var mediaPlayer = MediaPlayer()
 
-    fun preparePlayer(url: String, onPrepared: () -> Unit) {
+    override fun preparePlayer(url: String, onPrepared: () -> Unit) {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
@@ -18,21 +18,22 @@ class PlayerService {
         }
     }
 
-    fun startPlayer(onPlay: () -> Unit) {
+    override fun startPlayer(onPlay: () -> Unit) {
         mediaPlayer.start()
         onPlay()
     }
 
-    fun pausePlayer(onPause: () -> Unit) {
+    override fun pausePlayer(onPause: () -> Unit) {
         mediaPlayer.pause()
         onPause()
     }
-    fun releaseTrack(onRelease: () -> Unit) {
+
+    override fun releaseTrack(onRelease: () -> Unit) {
         mediaPlayer.release()
         onRelease()
     }
-    fun currentPosition() : Int {
+
+    override fun currentPosition(): Int {
         return mediaPlayer.currentPosition
     }
-    }
-
+}

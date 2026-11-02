@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.model
+package com.ivan.playlistmaker.data.dto
 
 import android.icu.text.SimpleDateFormat
 import java.util.Locale

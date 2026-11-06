@@ -5,10 +5,6 @@ import com.ivan.playlistmaker.model.HistoryActions
 
 interface SearchHistoryInteractor {
     fun saveHistory(track: Track?, onAddTrack: (ArrayDeque<Track>) -> Unit)
-    fun clearAndReadHistory(
-        action: HistoryActions,
-        onRead: (ArrayDeque<Track>) -> Unit,
-        onClear: (ArrayDeque<Track>) -> Unit,
-        onHide: (ArrayDeque<Track>) -> Unit
-    )
+    fun getHistory(): List<Track>
+    fun clearHistory()
 }

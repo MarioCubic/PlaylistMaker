@@ -3,7 +3,6 @@ package com.ivan.playlistmaker.search.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ivan.playlistmaker.data.dto.Track
-import com.ivan.playlistmaker.model.HistoryActions
 import com.ivan.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.ivan.playlistmaker.search.domain.api.TracksInteractor
 
@@ -47,5 +46,17 @@ class SearchPresenter(
                 _screenState.value = SearchScreenState.SearchHistory(trackHistory.toList())
             }
         )
+    }
+
+    fun readHistory() {
+
+    }
+
+    fun clearHistory() {
+
+    }
+
+    fun hideHistory() {
+
     }
 }

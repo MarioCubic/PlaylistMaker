@@ -49,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
 
         val searchPresenter = SearchPresenter(
             Creator.provideTracksInteractor(),
-            Creator.provideSearchHistoryInteractor(this)
+            Creator.provideSearchHistoryInteractor(applicationContext)
         )
         searchPresenter.updateHistory(HistoryActions.READ)
 

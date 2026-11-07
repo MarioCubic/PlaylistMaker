@@ -32,31 +32,21 @@ class SearchPresenter(
             }
         )
     }
-
-    fun updateHistory(action: HistoryActions) {
-        searchHistoryInteractor.clearAndReadHistory(
-            action,
+    fun readHistory() {
+        searchHistoryInteractor.readHistory(
             onRead = { trackHistory ->
-                _screenState.value = SearchScreenState.SearchHistory(trackHistory.toList())
-            },
-            onClear = { trackHistory ->
-                _screenState.value = SearchScreenState.SearchHistory(trackHistory.toList())
-            },
-            onHide = { trackHistory ->
                 _screenState.value = SearchScreenState.SearchHistory(trackHistory.toList())
             }
         )
     }
 
-    fun readHistory() {
-
-    }
-
     fun clearHistory() {
-
+        searchHistoryInteractor.clearHistory(
+            onClear = { trackHistory ->
+                _screenState.value = SearchScreenState.SearchHistory(trackHistory.toList())
+            }
+        )
     }
 
-    fun hideHistory() {
-
-    }
 }
+

@@ -25,7 +25,6 @@ import com.ivan.playlistmaker.search.presentation.SearchPresenter
 import com.ivan.playlistmaker.R
 import com.ivan.playlistmaker.search.presentation.SearchScreenState
 import com.ivan.playlistmaker.search.ui.adapters.TrackAdapter
-import com.ivan.playlistmaker.model.HistoryActions
 import com.ivan.playlistmaker.creator.Creator
 import com.ivan.playlistmaker.data.dto.Track
 import com.ivan.playlistmaker.player.ui.PlayerActivity
@@ -51,7 +50,7 @@ class SearchActivity : AppCompatActivity() {
             Creator.provideTracksInteractor(),
             Creator.provideSearchHistoryInteractor(applicationContext)
         )
-        searchPresenter.updateHistory(HistoryActions.READ)
+        searchPresenter.readHistory()
 
         findViewById<RecyclerView>(R.id.musicRecycler).apply {
             adapter = this@SearchActivity.adapter
@@ -106,11 +105,11 @@ class SearchActivity : AppCompatActivity() {
         }
         adapter.onClearHistoryClick = {
             tracks.clear()
-            searchPresenter.updateHistory(HistoryActions.CLEAR)
+            searchPresenter.clearHistory()
         }
         searchField.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && searchField.text.isEmpty()) {
-                searchPresenter.updateHistory(HistoryActions.READ)
+                searchPresenter.readHistory()
             }
 
             fun allPlaceholdersDisabled() {
@@ -139,7 +138,7 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 if (searchField.hasFocus() && s?.isBlank() == true) {
                     allPlaceholdersDisabled()
-                    searchPresenter.updateHistory(HistoryActions.READ)
+                    searchPresenter.readHistory()
                 } else {
                     tracks.clear()
                     adapter.notifyDataSetChanged()

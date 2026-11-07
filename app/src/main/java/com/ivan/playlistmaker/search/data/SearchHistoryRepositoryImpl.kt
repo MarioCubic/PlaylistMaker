@@ -10,15 +10,15 @@ import com.ivan.playlistmaker.search.domain.api.SearchHistoryRepository
 
 class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences?) :
     SearchHistoryRepository {
-    // private val searchHistory = ArrayDeque<Track>()
 
-    override fun getHistory(): ArrayDeque<Track>? {
+
+    override fun getHistory(): ArrayDeque<Track> {
         val json = sharedPreferences?.getString(SEARCH_HISTORY, null)
 
         if (json != null) {
             val type = object : TypeToken<ArrayDeque<Track>>() {}.type
             return Gson().fromJson(json, type)
-        } else return null;
+        } else return ArrayDeque()
     }
 
 
@@ -36,37 +36,4 @@ class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferenc
         }
     }
 }
-
-// ЛЕГАСИ
-
-/*  override fun saveHistory(track: Track?, onAddTrack: (ArrayDeque<Track>) -> Unit) {
-      addTrackToHistory(track)
-      writeSharedPrefs(searchHistory)
-      onAddTrack(searchHistory)
-  }
-
-  private fun addTrackToHistory(track: Track?) {
-
-          if (track != null) {
-              searchHistory.addFirst(track)
-          }
-          writeSharedPrefs(searchHistory)
-  }
-
-  private fun writeSharedPrefs(searchHistory: ArrayDeque<Track>) {
-      val json = Gson().toJson(searchHistory)
-      sharedPreferences?.edit {
-          putString(SEARCH_HISTORY, json)
-      }
-  }
-
-  private fun clearSharedPrefs() {
-      sharedPreferences?.edit {
-          remove(SEARCH_HISTORY)
-      }
-  }
-
-  private fun readSharedPrefs(): ArrayDeque<Track> {
-
-  } */
 

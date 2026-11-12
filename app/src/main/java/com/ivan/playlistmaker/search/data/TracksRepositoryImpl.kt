@@ -1,15 +1,22 @@
-package com.ivan.playlistmaker.search
-import com.ivan.playlistmaker.model.TrackResponse
+package com.ivan.playlistmaker.search.data
+
+import com.ivan.playlistmaker.data.dto.TrackResponse
+import com.ivan.playlistmaker.search.data.network.RetrofitImpl
+import com.ivan.playlistmaker.search.domain.api.TracksRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ApiRepository {
-
+class TracksRepositoryImpl : TracksRepository {
     private val serverDataSource = RetrofitImpl().getRetrofitImpl()
 
-    fun fetchData(track: String, onResult: (TrackResponse) -> Unit, onError: () -> Unit, onNoInternet: () -> Unit)  {
-        serverDataSource.search(track).enqueue(object : Callback<TrackResponse> {
+    override fun searchTracks(
+        expression: String,
+        onResult: (TrackResponse) -> Unit,
+        onError: () -> Unit,
+        onNoInternet: () -> Unit
+    ) {
+        serverDataSource.search(expression).enqueue(object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse?>,
                 response: Response<TrackResponse?>

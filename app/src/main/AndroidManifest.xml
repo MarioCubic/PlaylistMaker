@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name=".settings.ui.SettingsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -32,11 +32,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".search.SearchActivity"
+            android:name=".search.ui.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".player.PlayerActivity"
+            android:name=".player.ui.PlayerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

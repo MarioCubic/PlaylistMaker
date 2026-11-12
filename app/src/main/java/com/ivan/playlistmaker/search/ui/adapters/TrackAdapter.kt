@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.search.adapters
+package com.ivan.playlistmaker.search.ui.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.ivan.playlistmaker.R
-import com.ivan.playlistmaker.model.Track
+import com.ivan.playlistmaker.data.dto.Track
 
 class TrackAdapter(val userData: List<Track>, private var showHeaderFooter: Boolean = false) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {

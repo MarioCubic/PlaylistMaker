@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.search
+package com.ivan.playlistmaker.search.data.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,6 +12,4 @@ class RetrofitImpl {
             .build()
             .create(ItunesAPI::class.java)
     }
-
-
 }

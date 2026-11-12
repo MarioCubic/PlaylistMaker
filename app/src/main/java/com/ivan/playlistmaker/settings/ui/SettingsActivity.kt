@@ -1,22 +1,22 @@
-package com.ivan.playlistmaker.settings
+package com.ivan.playlistmaker.settings.ui
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.ivan.playlistmaker.App
 import com.ivan.playlistmaker.R
+import com.ivan.playlistmaker.creator.Creator
+import com.ivan.playlistmaker.settings.presentation.SettingsPresenter
 
 class SettingsActivity : AppCompatActivity() {
-    @SuppressLint("QueryPermissionsNeeded")
+
+    private lateinit var presenter: SettingsPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,48 +26,38 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val sharedPrefs = getSharedPreferences(App.PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
+        presenter = SettingsPresenter(
+            sharingInteractor = Creator.provideSharingInteractor(this),
+            settingsInteractor = Creator.provideSettingsInteractor(this)
+        )
+
         val navToolbar = findViewById<MaterialToolbar>(R.id.header)
         val shareButton = findViewById<TextView>(R.id.share_app)
         val supportButton = findViewById<TextView>(R.id.support)
         val termsButton = findViewById<TextView>(R.id.terms)
         val themeSwitcher = findViewById<SwitchCompat>(R.id.themeSwitcher)
 
-
-        themeSwitcher.isChecked = sharedPrefs.getBoolean(App.DARK_THEME, false)
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+        themeSwitcher.isChecked = presenter.getThemeSettings()
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            presenter.updateThemeSetting(checked)
+            (applicationContext as App).darkTheme = checked
         }
-
 
         navToolbar.setNavigationOnClickListener {
             finish()
         }
+
         shareButton.setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.practicum_link))
-            }
-            startActivity(Intent.createChooser(shareIntent, "Поделиться"))
+            presenter.shareApp()
         }
+
         supportButton.setOnClickListener {
-            val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = "mailto:".toUri()
-                val adresses: Array<String> = arrayOf(getString(R.string.email))
-                putExtra(Intent.EXTRA_EMAIL, adresses)
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.theme_of_mail))
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.message))
-
-            }
-            startActivity(supportIntent)
+            presenter.openSupport()
         }
+
         termsButton.setOnClickListener {
-            val webpage: Uri = getString(R.string.terms_link).toUri()
-            val termsIntent = Intent(Intent.ACTION_VIEW, webpage)
-            startActivity(termsIntent)
+            presenter.openTerms()
         }
-
     }
-
-
 }

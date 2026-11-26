@@ -8,6 +8,9 @@ android {
         version = release(37) {
             minorApiLevel = 1
         }
+        buildFeatures {
+            viewBinding = true
+        }
     }
 
     defaultConfig {
@@ -42,6 +45,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.recyclerview)
     implementation(libs.material)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

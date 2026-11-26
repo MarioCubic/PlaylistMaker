@@ -1,4 +1,4 @@
-package com.ivan.playlistmaker.mediaLibrary
+package com.ivan.playlistmaker.mediaLibrary.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

@@ -1,13 +1,14 @@
 package com.ivan.playlistmaker.settings.presentation
 
+import androidx.lifecycle.ViewModel
 import com.ivan.playlistmaker.settings.domain.api.SettingsInteractor
 import com.ivan.playlistmaker.settings.domain.model.ThemeSettings
 import com.ivan.playlistmaker.sharing.domain.api.SharingInteractor
 
-class SettingsPresenter(
+class SettingsViewModel (
     private val sharingInteractor: SharingInteractor,
     private val settingsInteractor: SettingsInteractor
-) {
+) : ViewModel() {
     fun getThemeSettings(): Boolean {
         return settingsInteractor.getThemeSettings().isDarkTheme
     }

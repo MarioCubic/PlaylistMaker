@@ -2,14 +2,15 @@ package com.ivan.playlistmaker.search.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.ivan.playlistmaker.data.dto.Track
 import com.ivan.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.ivan.playlistmaker.search.domain.api.TracksInteractor
 
-class SearchPresenter(
+class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
     private val searchHistoryInteractor: SearchHistoryInteractor
-) {
+) : ViewModel() {
     private val _screenState = MutableLiveData<SearchScreenState>()
     internal val screenState: LiveData<SearchScreenState> = _screenState
 

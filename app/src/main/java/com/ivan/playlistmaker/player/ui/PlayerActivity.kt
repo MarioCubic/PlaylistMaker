@@ -4,142 +4,144 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ivan.playlistmaker.R
 import com.ivan.playlistmaker.creator.Creator
 import com.ivan.playlistmaker.data.dto.Track
-import com.ivan.playlistmaker.player.presentation.PlayerPresenter
+import com.ivan.playlistmaker.databinding.ActivityPlayerBinding
+import com.ivan.playlistmaker.player.presentation.PlayerViewModel
 import com.ivan.playlistmaker.player.presentation.PlayerScreenState
+import com.ivan.playlistmaker.player.presentation.PlayerViewModelFactory
 
 class PlayerActivity : AppCompatActivity() {
-    val playerPresenter = PlayerPresenter(Creator.providePlayerInteractor())
+    val playerViewModel : PlayerViewModel by viewModels {
+        PlayerViewModelFactory(Creator.providePlayerInteractor())
+    }
+    private lateinit var binding: ActivityPlayerBinding
     val trackTimeHandler = Handler(Looper.getMainLooper())
     var timeThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_player)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupWindowInsets()
+        observeViewModel()
+        setupListeners()
         val json = intent.getStringExtra("track")
         val type = object : TypeToken<Track>() {}.type
         val track: Track = Gson().fromJson(json, type)
         val url = track.previewUrl
 
-        val navToolbar = findViewById<MaterialToolbar>(R.id.header)
-        navToolbar.setNavigationOnClickListener {
-            finish()
-        }
-
-
-        val collectionCover = findViewById<ImageView>(R.id.collectionView)
-        val trackName = findViewById<TextView>(R.id.trackName)
-        val artistName = findViewById<TextView>(R.id.artistName)
-        val addToMediaButton = findViewById<ImageView>(R.id.addToPlaylistButton)
-        val playPauseButton = findViewById<ImageView>(R.id.playPauseButton)
-        val likeButton = findViewById<ImageView>(R.id.likeButton)
-        val playbackTime = findViewById<TextView>(R.id.playbackTime)
-
-
-        val length = findViewById<TextView>(R.id.length)
-        val collection = findViewById<TextView>(R.id.collection)
-        val year = findViewById<TextView>(R.id.year)
-        val genre = findViewById<TextView>(R.id.genre)
-        val country = findViewById<TextView>(R.id.country)
-
-        val collectionGroup = findViewById<Group>(R.id.collectionGroup)
-        val yearGroup = findViewById<Group>(R.id.yearGroup)
-
-        fun startUpdateTime() {
-            if (timeThread?.isAlive == true) return
-
-            timeThread = Thread {
-                try {
-                    while (!Thread.currentThread().isInterrupted) {
-                        trackTimeHandler.post {
-                            playbackTime.text = playerPresenter.localeTimeFormat()
-                        }
-                        Thread.sleep(500)
-                    }
-                } catch (e: InterruptedException) {
-                }
-            }
-
-            timeThread?.start()
-        }
-        fun stopUpdateTime() {
-            timeThread?.interrupt()
-            timeThread = null
-        }
-
-
-        val radius = (CORNER_RADIUS * collectionCover.resources.displayMetrics.density).toInt()
+        val radius = (CORNER_RADIUS * binding.collectionView.resources.displayMetrics.density).toInt()
         fun getCoverArtwork() = track.artworkUrl100.replaceAfterLast(DELIMITER, REPLACEMENT)
-        Glide.with(collectionCover)
+        Glide.with(binding.collectionView)
             .load(getCoverArtwork())
             .placeholder(R.drawable.placeholder_track_312)
             .centerCrop()
             .transform(RoundedCorners(radius))
-            .into(collectionCover)
+            .into(binding.collectionView)
 
-        trackName.text = track.trackName
-        artistName.text = track.artistName
-        length.text = track.convertTrackTimeToLocale(track.trackTimeMillis)
-        collection.text = viewVisibility(collectionGroup, track.collectionName)
-        year.text = viewVisibility(yearGroup, track.getYear(track.releaseDate))
-        genre.text = track.primaryGenreName
-        country.text = track.country
+        binding.trackName.text = track.trackName
+        binding.artistName.text = track.artistName
+        binding.length.text = track.convertTrackTimeToLocale(track.trackTimeMillis)
+        binding.collection.text = viewVisibility(binding.collectionGroup, track.collectionName)
+        binding.year.text = viewVisibility(binding.yearGroup, track.getYear(track.releaseDate))
+        binding.genre.text = track.primaryGenreName
+        binding.country.text = track.country
 
-        trackName.isSelected = true
-        artistName.isSelected = true
+        binding.trackName.isSelected = true
+        binding.artistName.isSelected = true
         if (url != null) {
-            playerPresenter.prepareTrack(url)
+            playerViewModel.prepareTrack(url)
         }
 
+    }
 
-        playerPresenter.screenState.observe(this) { screenState ->
+    private fun setupListeners() {
+        val navToolbar = binding.header
+        navToolbar.setNavigationOnClickListener {
+            finish()
+        }
+    }
+
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
+    private fun startUpdateTime() {
+        if (timeThread?.isAlive == true) return
+
+        timeThread = Thread {
+            try {
+                while (!Thread.currentThread().isInterrupted) {
+                    trackTimeHandler.post {
+                        binding.playbackTime.text = playerViewModel.localeTimeFormat()
+                    }
+                    Thread.sleep(500)
+                }
+            } catch (_: InterruptedException) {
+            }
+        }
+
+        timeThread?.start()
+    }
+    private fun stopUpdateTime() {
+        timeThread?.interrupt()
+        timeThread = null
+    }
+
+    private fun viewVisibility(view: View, data: String): String {
+        if (data.isEmpty()) {
+            view.visibility = View.GONE
+        } else {
+            return data
+        }
+        return ""
+    }
+
+    private fun observeViewModel() {
+        playerViewModel.screenState.observe(this) { screenState ->
             when (screenState) {
                 is PlayerScreenState.Preparing -> {
-                    playPauseButton.isEnabled = false
+                    binding.playPauseButton.isEnabled = false
                 }
 
                 is PlayerScreenState.Prepared -> {
-                    playPauseButton.isEnabled = true
-                    playPauseButton.setImageResource(R.drawable.button_play_100)
+                    binding.playPauseButton.isEnabled = true
+                    binding.playPauseButton.setImageResource(R.drawable.button_play_100)
                     stopUpdateTime()
-                    playbackTime.text = CURRENT_TIME_TRACK
-                    playPauseButton.setOnClickListener {
-                        playerPresenter.playTrack()
+                    binding.playbackTime.text = CURRENT_TIME_TRACK
+                    binding.playPauseButton.setOnClickListener {
+                        playerViewModel.playTrack()
                     }
                 }
 
                 is PlayerScreenState.OnPlay -> {
-                    playPauseButton.setImageResource(R.drawable.button_pause_100)
-                    playPauseButton.setOnClickListener {
-                        playerPresenter.pauseTrack()
+                    binding.playPauseButton.setImageResource(R.drawable.button_pause_100)
+                    binding.playPauseButton.setOnClickListener {
+                        playerViewModel.pauseTrack()
                     }
                     startUpdateTime()
                 }
 
                 is PlayerScreenState.OnPause -> {
-                    playPauseButton.setImageResource(R.drawable.button_play_100)
-                    playPauseButton.setOnClickListener {
-                        playerPresenter.playTrack()
+                    binding.playPauseButton.setImageResource(R.drawable.button_play_100)
+                    binding.playPauseButton.setOnClickListener {
+                        playerViewModel.playTrack()
                     }
                     stopUpdateTime()
                 }
@@ -152,27 +154,15 @@ class PlayerActivity : AppCompatActivity() {
 
             }
         }
-
-
     }
-
     override fun onPause() {
         super.onPause()
-        playerPresenter.pauseTrack()
+        playerViewModel.pauseTrack()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        playerPresenter.releaseTrack()
-    }
-
-    fun viewVisibility(view: View, data: String): String {
-        if (data.isEmpty()) {
-            view.visibility = View.GONE
-        } else {
-            return data
-        }
-        return ""
+        playerViewModel.releaseTrack()
     }
 
     companion object {

@@ -3,12 +3,13 @@ package com.ivan.playlistmaker.player.presentation
 import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.ivan.playlistmaker.player.domain.api.PlayerInteractor
 import java.util.Locale
 
-class PlayerPresenter(
+class PlayerViewModel(
     private val playerInteractor: PlayerInteractor
-) {
+) : ViewModel() {
     private val _screenState = MutableLiveData<PlayerScreenState>()
     internal val screenState: LiveData<PlayerScreenState> = _screenState
 
